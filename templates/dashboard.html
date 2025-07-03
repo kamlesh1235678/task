@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Market Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            border: 1px solid #aaa;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        canvas {
+            max-width: 100%;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Flight Price Trends</h1>
+    <canvas id="priceChart"></canvas>
+
+    <h2>Flight Data Table</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Airline</th>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Price</th>
+                <th>Departure</th>
+                <th>Fetched At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for f in flights %}
+            <tr>
+                <td>{{ f.airline }}</td>
+                <td>{{ f.source }}</td>
+                <td>{{ f.destination }}</td>
+                <td>{{ f.price }}</td>
+                <td>{{ f.departure_time }}</td>
+                <td>{{ f.fetched_at }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No flight data available.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ price_data.keys|safe }},
+                datasets: [{
+                    label: 'Average Price',
+                    data: {{ price_data.values|safe }},
+                    borderColor: 'blue',
+                    tension: 0.3,
+                    fill: false,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Price (₹)'
+                        },
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
